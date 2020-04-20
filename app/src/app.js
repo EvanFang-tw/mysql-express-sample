@@ -18,7 +18,7 @@ app.get('/product/:id', async (req, res) => {
     const { id } = req.params;
     const result = await db.query(`SELECT * FROM products WHERE id = ?`, id);
     res.send(result);
-  } catch(err) {
+  } catch (err) {
     res.status(500).send(err.message);
   }
 });
@@ -28,7 +28,7 @@ app.get('/products', async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM products');
     res.send(result);
-  } catch(err) {
+  } catch (err) {
     res.status(500).send(err.message);
   }
 });
@@ -36,12 +36,12 @@ app.get('/products', async (req, res) => {
 // Create a new product
 app.post('/product', async (req, res) => {
   const { name, remark, price } = req.body;
-  
+
   try {
     const result = await db.query('INSERT INTO products(name, remark, price) VALUES(?, ?, ?)', [name, remark, price]);
     const { insertId } = result;
     res.send(insertId);
-  } catch(err) {
+  } catch (err) {
     res.status(500).send(err.message);
   }
 });
@@ -63,6 +63,17 @@ app.delete('/product/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const result = await db.query('DELETE FROM products WHERE id = ?', id);
+    res.send(result);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Get free product list by invoking stored procedure
+app.get('/products/free/:price', async (req, res) => {
+  const { price } = req.params;
+  try {
+    const result = await db.query('CALL get_free_products(?)', price);
     res.send(result);
   } catch (err) {
     res.status(500).send(err.message);
